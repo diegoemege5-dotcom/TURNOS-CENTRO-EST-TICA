@@ -121,20 +121,48 @@ VITE_SUPABASE_ANON_KEY=<anon-public-key>
 
 ---
 
-## Setup inicial
+## Setup rápido para desarrolladores
+
+> Guía detallada paso a paso: ver [SETUP.md](./SETUP.md)
+
+### 1. Crear proyecto en Supabase
+
+1. Ir a [supabase.com](https://supabase.com) → **New project**
+2. Elegir organización, nombre y región (ej. South America)
+3. Guardar la contraseña de base de datos que se genera
+4. Esperar ~2 min a que el proyecto quede activo
+
+### 2. Ejecutar el schema
+
+1. En el dashboard → **SQL Editor** → **New query**
+2. Pegar el contenido de `supabase/schema.sql`
+3. Click en **Run** (o `Ctrl+Enter`)
+4. Verificar en **Table Editor** que aparecen las 6 tablas
+
+### 3. Obtener las credenciales
+
+En **Project Settings → API**:
+- `Project URL` → valor de `VITE_SUPABASE_URL`
+- `anon / public` key → valor de `VITE_SUPABASE_ANON_KEY`
+
+### 4. Configurar el entorno local
 
 ```bash
-# 1. Instalar dependencias
-npm install
-
-# 2. Copiar y completar variables de entorno
 cp .env.example .env.local
+# Editar .env.local con los valores del paso anterior
+```
 
-# 3. Ejecutar el schema en Supabase
-#    → Abrir Supabase Dashboard > SQL Editor > pegar supabase/schema.sql > Run
+```
+VITE_SUPABASE_URL=https://xxxxxxxxxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
-# 4. Arrancar dev server
+### 5. Arrancar la app
+
+```bash
+npm install
 npm run dev
+# → http://localhost:5173
 ```
 
 ---
