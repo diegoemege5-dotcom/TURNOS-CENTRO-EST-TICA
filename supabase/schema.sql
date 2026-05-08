@@ -195,3 +195,61 @@ create policy "clientes: mismo negocio" on clientes
 
 create policy "turnos: mismo negocio" on turnos
   for all using (negocio_id = (auth.jwt() ->> 'negocio_id')::uuid);
+
+-- ------------------------------------------------------------
+-- COMPROBANTES DE PAGO
+-- Registros extraídos automáticamente desde WhatsApp + Gemini AI.
+-- Cada comprobante puede vincularse opcionalmente a un turno.
+-- ------------------------------------------------------------
+create type estado_comprobante as enum (
+  'pendiente',
+  'verificado',
+  'revisar',
+  'rechazado'
+);
+
+create type tipo_pago as enum (
+  'transferencia',
+  'deposito',
+  'qr',
+  'efectivo',
+  'otro'
+);
+
+create table comprobantes_pago (
+  id               uuid          primary key default uuid_generate_v4(),
+  negocio_id       uuid          not null references negocios(id) on delete cascade,
+  turno_id         uuid          references turnos(id) on delete set null,
+  -- Datos extraídos por Gemini
+  emisor           text,
+  monto            numeric(12,2) not null check (monto > 0),
+  fecha_pago       date,
+  hora_pago        time,
+  nro_transaccion  text,
+  banco_origen     text,
+  banco_destino    text,
+  tipo             tipo_pago     not null default 'otro',
+  confianza_ia     numeric(3,2)  check (confianza_ia between 0 and 1),
+  -- Metadatos del proceso
+  archivo_origen   text,
+  raw_ia           jsonb,
+  estado           estado_comprobante not null default 'pendiente',
+  notas            text,
+  created_at       timestamptz   not null default now(),
+  updated_at       timestamptz   not null default now()
+);
+
+create index idx_comprobantes_negocio    on comprobantes_pago(negocio_id);
+create index idx_comprobantes_turno      on comprobantes_pago(turno_id);
+create index idx_comprobantes_fecha      on comprobantes_pago(fecha_pago);
+create index idx_comprobantes_estado     on comprobantes_pago(estado);
+create index idx_comprobantes_nro_tx     on comprobantes_pago(nro_transaccion);
+
+create trigger trg_comprobantes_updated_at
+  before update on comprobantes_pago
+  for each row execute function set_updated_at();
+
+alter table comprobantes_pago enable row level security;
+
+create policy "comprobantes: mismo negocio" on comprobantes_pago
+  for all using (negocio_id = (auth.jwt() ->> 'negocio_id')::uuid);
