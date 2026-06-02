@@ -5,6 +5,7 @@ import Turnos from './pages/Turnos'
 import Profesionales from './pages/Profesionales'
 import Servicios from './pages/Servicios'
 import Clientes from './pages/Clientes'
+import Calculadora from './pages/Calculadora'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="profesionales" element={<Profesionales />} />
         <Route path="servicios" element={<Servicios />} />
         <Route path="clientes" element={<Clientes />} />
+        <Route path="calculadora" element={<Calculadora />} />
       </Route>
     </Routes>
   )
