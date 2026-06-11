@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
+import useStore from '../../store/useStore'
 
 function HamburgerIcon() {
   return (
@@ -19,6 +20,7 @@ function HamburgerIcon() {
 
 export default function PageShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const nombre = useStore((s) => s.settings.nombre)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -42,7 +44,7 @@ export default function PageShell() {
           >
             <HamburgerIcon />
           </button>
-          <span className="font-semibold text-gray-900">Studio Bellas</span>
+          <span className="font-semibold text-gray-900">{nombre || 'Catering'}</span>
         </header>
 
         <main className="p-4 md:p-8">
